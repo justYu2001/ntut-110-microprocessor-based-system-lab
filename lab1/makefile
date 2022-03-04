@@ -15,5 +15,5 @@ all:clean $(OBJ)
 	$(CXX) -c $< -o $@
 
 clean:
-	rm *.o
-	rm $(EXE)
+	rm -f *.o
+	rm -f $(EXE)
