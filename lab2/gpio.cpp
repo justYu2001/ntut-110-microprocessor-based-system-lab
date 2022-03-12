@@ -1,6 +1,7 @@
 #include <fstream>
 #include <string>
 #include <cerrno>
+#include "gpio.h"
 
 using namespace std;
 
@@ -58,27 +59,4 @@ void setValue(unsigned int gpio, int value) {
 		outFileStream << value;
 		outFileStream.close();
 	}
-}
-
-int main(int argc, char *argv[]) {
-    int leds[4] = {396, 466, 392, 481};
-
-    char *led = argv[1];
-    char *value = argv[2];
-
-    for (int i = 0; i < 4; i++) {
-        if (led[3] - '0' == i) {
-	    	if (value[1] == 'n') {
-				setExport(leds[i]);
-				setDirection(leds[i], "out");
-				setValue(leds[i], 1);
-			} else {
-				setValue(leds[i], 0);
-				setUnexport(leds[i]);
-			}
-			break;
-		}
-    }
-
-    return 0;
 }
