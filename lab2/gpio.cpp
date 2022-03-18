@@ -1,7 +1,6 @@
 #include <fstream>
 #include <string>
 #include <cerrno>
-#include <iostream>
 #include "gpio.h"
 
 using namespace std;

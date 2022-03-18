@@ -15,9 +15,9 @@ void turnOnLED(unsigned int gpio) {
 }
 
 void turnOffLED(unsigned int gpio) {
-        setUnexport(gpio);
-        setExport(gpio);
-setDirection(gpio, "out");
+    setUnexport(gpio);
+    setExport(gpio);
+    setDirection(gpio, "out");
     setValue(gpio, 0);
     setUnexport(gpio);
 }
@@ -59,8 +59,6 @@ int main(int argc, char *argv[]) {
     string firstArgument(argv[1]);
     string secondArgument(argv[2]);
 
-    cout << firstArgument << endl;
-    cout << secondArgument << endl;
     if(firstArgument.substr(0, 3) == "LED") {
         switchLED(firstArgument, secondArgument);
     } else if (firstArgument.substr(0, 10) == "Mode_Shine") {
