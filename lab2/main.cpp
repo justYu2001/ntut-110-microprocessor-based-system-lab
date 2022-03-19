@@ -52,7 +52,7 @@ void flashLED(int times) {
         this_thread::sleep_for(chrono::seconds(1));
     }
     turnOffLED(leds[2]);
-        turnOffLED(leds[3]);
+    turnOffLED(leds[3]);
 }
 
 int main(int argc, char *argv[]) {
