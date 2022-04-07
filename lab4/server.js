@@ -18,12 +18,45 @@ app.use(express.json());
 const ledStatusList = [false, false, false, false];
 
 function getOperationArguments(body) {
-    const { ledID, operation } = body;
+    const { ledID, operation, times } = body;
+    console.log(body);
 
-    if(ledID) {
-        return ['-S', './gpio/gpio', `LED${ledID}`, operation];
+    if(ledID !== undefined && (ledID < 1 || ledID > 4)) {
+        throw new Error('此 LED ID 不存在');
+    }
+
+    if(operation !== 'on' && operation !== 'off' && operation !== 'shine') {
+        throw new Error('無法執行此操作');
+    }
+
+    if(operation === 'shine' && times === undefined) {
+        throw new Error('沒有給定閃爍次數');
+    }
+
+    if((operation === 'on' || operation === 'off') && ledID === undefined) {
+        throw new Error('沒有給定 LED ID');
+    }
+
+    if(operation == 'shine') {
+        return ['-S', './gpio/gpio', 'Mode_Shine', times];
     } else {
-        return ['-S', './gpio/gpio', operation];
+        return ['-S', './gpio/gpio', `LED${ledID}`, operation];
+    }
+}
+
+async function controlGPIO(arguments) {
+    const password = spawn("echo", [process.env.SUDO_PASSWORD]);
+        
+    const gpio = spawn('sudo', arguments);
+    password.stdout.pipe(gpio.stdin);
+
+    let error = '';
+    for await(const chunk of gpio.stderr) {
+        error += chunk;
+    }
+
+    if(error !== '') {
+        throw new Error(error);
     }
 }
 
@@ -32,38 +65,32 @@ app.post('/operations', async (request, response) => {
     const { body } = request;
     const { ledID, operation } = body;
 
-    if(process.env.NODE_ENV == 'production') {
-        const password = spawn("echo", [process.env.SUDO_PASSWORD]);
+    try {
         const arguments = getOperationArguments(body);
-        const gpio = spawn('sudo', arguments);
-        password.stdout.pipe(gpio.stdin);
-
-        let error = "";
-        for await(const chunk of gpio.stderr) {
-            error += chunk;
+        if(process.env.NODE_ENV === 'production') {
+            await controlGPIO(arguments);
         }
-
-        if(error.length > 0) {
-            console.error(error);
-            response.status(400).send(error);
-        }
-    } else {
-        if(ledID < 1 || ledID > 4) {
-            response.status(400).send('此 LED ID 不存在');
-        } else if(operation !== 'on' && operation !== 'off' && operation !== 'shine') {
-            response.status(400).send('無法執行此操作');
-        }
+    } catch (error) {
+        response.status(400).send({ 
+            error: error.message, 
+        });
+        console.error(error);
+        return;
     }
-    
+
     let time = 0;
+
     if(ledID) {
         ledStatusList[ledID - 1] = operation == 'on';
-    } else {
+    }
+    
+    if(operation == 'shine') {
         time = 800;
         ledStatusList.forEach((elem, index) => {
             ledStatusList[index] = false;
         });
     }
+
     response.status(201).send({
         ledStatusList,
         time,
