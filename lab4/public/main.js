@@ -56,11 +56,10 @@ function print(data){
     for(let i = 0; i < 6; i++){
         ledString += temp[i];
     }
-    console.log(ledString);
     ledLabel.innerHTML = ledString;
 }
 
-async function postData(data){
+async function postOnAndOffData(data){
     let response = [];
     data.forEach(element => {
         response = (axios.post(`/operations`, element));
@@ -70,6 +69,33 @@ async function postData(data){
     print(ledStatus.data.ledStatusList);
 }
 
+let shiningTime;
+
+function shining(){
+    if(shiningTime % 2 == 0){
+        print([true,true,false,false]);
+    }
+    else{
+        print([false,false,true,true]);
+    }
+    shiningTime -= 1;
+    if(shiningTime < 0){
+        clearInterval(intervalID);
+        print([false,false,false,false]);
+        btn.disabled = false;
+    }
+}
+
+let intervalID
+
+async function postShiningData(times){
+    data = {};
+    data['operation'] = "shine";
+    data['times'] = times;
+    const ledStatus = await axios.post(`/operations`,data);
+    let time = ledStatus.data.time;
+    intervalID = setInterval(shining,time);
+}
 
 document.getElementById('onAndOffbtn').addEventListener("click", btnclick);
 function btnclick(){
@@ -81,6 +107,17 @@ function btnclick(){
     let isOn = document.getElementById('onRadio').checked;
     switchLED(ledArray, isOn, ledStatusArray);
     let Data = saveData(ledStatusArray);
-    postData(Data);
+    postOnAndOffData(Data);
 }
 
+
+
+const btn = document.getElementById('shiningBtn');
+btn.addEventListener("click", shiningbtnclick);
+function shiningbtnclick(){
+    let times = document.getElementById("timesInput").value;
+    shiningTime = times * 2;
+    postShiningData(times);
+    btn.disabled = true;
+    
+}
