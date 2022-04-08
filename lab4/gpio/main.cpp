@@ -22,7 +22,7 @@ void turnOffLED(unsigned int gpio) {
     setUnexport(gpio);
 }
 
-int leds[4] = {396, 392, 481, 398};
+int leds[4] = {396, 392, 254, 398};
 
 void switchLED(string led, string status) {
     int ledID = led[3] - '1';
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 
     if(firstArgument.substr(0, 3) == "LED") {
         switchLED(firstArgument, secondArgument);
-    } else if (firstArgument.substr(0, 10) == "shine") {
+    } else if (firstArgument.substr(0, 5) == "shine") {
         int times = stoi(secondArgument);
         flashLED(times);
     } else {

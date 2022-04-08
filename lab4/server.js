@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const queueMiddleware = expressQueue({
-    activeLimit: 2,
+    activeLimit: 4,
     queuedLimit: -1,
 });
 
@@ -19,7 +19,6 @@ const ledStatusList = [false, false, false, false];
 
 function getOperationArguments(body) {
     const { ledID, operation, times } = body;
-    console.log(body);
 
     if(ledID !== undefined && (ledID < 1 || ledID > 4)) {
         throw new Error('此 LED ID 不存在');
@@ -38,7 +37,7 @@ function getOperationArguments(body) {
     }
 
     if(operation == 'shine') {
-        return ['-S', './gpio/gpio', 'Mode_Shine', times];
+        return ['-S', './gpio/gpio', operation, times];
     } else {
         return ['-S', './gpio/gpio', `LED${ledID}`, operation];
     }
@@ -47,15 +46,16 @@ function getOperationArguments(body) {
 async function controlGPIO(arguments) {
     const password = spawn("echo", [process.env.SUDO_PASSWORD]);
         
-    const gpio = spawn('sudo', arguments);
-    password.stdout.pipe(gpio.stdin);
+    const gpio = spawn('sudo', arguments, {
+        stdio: [password.stdout, 'pipe', process.stderr]
+    });
 
-    let error = '';
-    for await(const chunk of gpio.stderr) {
-        error += chunk;
-    }
+    if(gpio.stderr) {
+        let error = '';
+        for await(const chunk of gpio.stderr) {
+            error += chunk;
+        }
 
-    if(error !== '') {
         throw new Error(error);
     }
 }
