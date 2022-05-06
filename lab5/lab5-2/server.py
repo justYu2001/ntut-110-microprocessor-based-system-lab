@@ -34,7 +34,7 @@ async def createOperation(body: OperationBody, response: Response):
             response.status_code = status.HTTP_400_BAD_REQUEST
             return { "message": "狀態列表長度有誤，狀態列表長度必須為 2" }
 
-        device.setAllLedStatus(body.stateList)
+        device.setAllLedState(body.stateList)
         return { "message": "LED 狀態更新成功" }
 
     elif body.operation == 'shine':
