@@ -30,9 +30,9 @@ async def createOperation(body: OperationBody, response: Response):
             response.status_code = status.HTTP_400_BAD_REQUEST
             return { "message": "沒有給定狀態列表" }
 
-        if len(body.stateList) != 4:
+        if len(body.stateList) != 2:
             response.status_code = status.HTTP_400_BAD_REQUEST
-            return { "message": "狀態列表長度有誤，狀態列表長度必須為 4" }
+            return { "message": "狀態列表長度有誤，狀態列表長度必須為 2" }
 
         device.setAllLedStatus(body.stateList)
         return { "message": "LED 狀態更新成功" }
