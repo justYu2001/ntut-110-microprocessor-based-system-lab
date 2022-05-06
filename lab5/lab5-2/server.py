@@ -52,7 +52,7 @@ async def createOperation(body: OperationBody, response: Response):
 @app.websocket("/leds")
 async def getLedStateList(websocket: WebSocket):
     async def sentLedStateList(ledStateList):
-        await websocket.send_json({ 'stateList': ledStateList })
+        await websocket.send_json(ledStateList)
 
     await websocket.accept()
     while True:
