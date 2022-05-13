@@ -12,9 +12,6 @@ class Device:
         self.leds = [4, 18]
         self.stateList = [False, False]
 
-
-        self.isChanged = False
-
         self.photoCh = 0
 
         gpio.setwarnings(False)
@@ -67,7 +64,9 @@ class Device:
         gpioStateList = map(toGPIOState, stateList)
         gpio.output(self.leds, tuple(gpioStateList))
         self.stateList = stateList
-        self.isChanged = True
+    
+    def getAllLedState(self):
+        return self.stateList
 
     async def shine(self, times):
         for i in range(times):
@@ -77,10 +76,3 @@ class Device:
             await asyncio.sleep(0.8)
         
         self.setAllLedState([False, False])
-
-    async def onLedStateChange(self, callback):
-        if self.isChanged:
-            self.isChanged = False
-            await callback(self.ledStateList)
-        else:
-            await asyncio.sleep(0)

@@ -35,33 +35,20 @@ async def createOperation(body: OperationBody, response: Response):
             return { "message": "狀態列表長度有誤，狀態列表長度必須為 2" }
 
         device.setAllLedState(body.stateList)
-        return { "message": "LED 狀態更新成功" }
+        return { "stateList": device.getAllLedState() }
 
     elif body.operation == 'shine':
         if body.times == None:
             response.status_code = status.HTTP_400_BAD_REQUEST
             return { "message": "沒有給定閃爍次數" }
 
-        await device.shine(body.times)
-        return { "message": "LED 閃爍成功" }
+        device.shine(body.times)
+        return { "time": 800 }
     
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return { "message": "無法執行此操作" }
 
-@app.websocket("/leds")
-async def getLedStateList(websocket: WebSocket):
-    async def sentLedStateList(ledStateList):
-        await websocket.send_json({ 'stateList': ledStateList })
-
-    await websocket.accept()
-    while True:
-        await device.onLedStateChange(sentLedStateList)
-
-@app.websocket("/adc")
-async def getADCValue(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        adcValue = device.getADCValue()
-        await websocket.send_text(str(adcValue))
-        await asyncio.sleep(1)
+@app.get("/adc", status_code = 200)
+async def getADCValue(response: Response):
+    return device.getADCValue()
