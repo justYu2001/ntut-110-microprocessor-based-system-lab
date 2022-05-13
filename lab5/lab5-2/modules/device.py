@@ -1,5 +1,5 @@
 import Jetson.GPIO as gpio
-import asyncio
+import time
 
 class Device:
     def __init__(self):
@@ -8,8 +8,8 @@ class Device:
         self.spiMosi = 10
         self.spiCs = 8
 
-        # 7, 12
-        self.leds = [4, 18]
+        # 18, 12
+        self.leds = [24, 18]
         self.stateList = [False, False]
 
         self.photoCh = 0
@@ -68,11 +68,11 @@ class Device:
     def getAllLedState(self):
         return self.stateList
 
-    async def shine(self, times):
+    def shine(self, times):
         for i in range(times):
             self.setAllLedState([True, False])
-            await asyncio.sleep(0.8)
-            self.setAllLedStatus([False, True])
-            await asyncio.sleep(0.8)
+            time.sleep(0.8)
+            self.setAllLedState([False, True])
+            time.sleep(0.8)
         
         self.setAllLedState([False, False])
