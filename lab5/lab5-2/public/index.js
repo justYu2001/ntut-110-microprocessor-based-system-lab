@@ -106,6 +106,7 @@ function ADCbtnclick(){
         },1000);
     }
     else{
+        adclabel.innerText = "";
         clearInterval(adcInterval);
     }
 }
