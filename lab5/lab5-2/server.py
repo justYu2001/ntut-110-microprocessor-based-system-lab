@@ -26,6 +26,7 @@ class OperationBody(BaseModel):
 
 @app.post("/operations", status_code = 201)
 async def createOperation(body: OperationBody, response: Response):
+    print(body)
     if body.operation == 'set state':
         if body.stateList == None:
             response.status_code = status.HTTP_400_BAD_REQUEST

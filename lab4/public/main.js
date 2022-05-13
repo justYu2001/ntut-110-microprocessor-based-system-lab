@@ -119,5 +119,4 @@ function shiningbtnclick(){
     shiningTime = times * 2;
     postShiningData(times);
     btn.disabled = true;
-    
 }
