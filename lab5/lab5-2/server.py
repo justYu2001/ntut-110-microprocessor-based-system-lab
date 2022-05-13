@@ -5,8 +5,6 @@ from fastapi.templating import Jinja2Templates
 from typing import Optional
 from pydantic import BaseModel
 from modules.device import Device
-import asyncio
-
 
 app = FastAPI()
 templates = Jinja2Templates(directory = 'public')
@@ -52,5 +50,5 @@ async def createOperation(body: OperationBody, response: Response):
         return { "message": "無法執行此操作" }
 
 @app.get("/adc", status_code = 200)
-async def getAdcValue(ersponse: Response):
+async def getAdcValue():
     return device.getADCValue()
