@@ -9,9 +9,12 @@ class Device:
     def getADCValue(self):       
         return random.randint(0, 1024)
 
-    def setAllLedStatus(self, statusList):
-        self.ledStateList = statusList
+    def setLedStateList(self, ledStateList):
+        self.ledStateList = ledStateList
         self.isChanged = True
+
+    def getLedStateList(self):
+        return self.ledStateList
 
     async def shine(self, times):
         for i in range(times):
@@ -19,10 +22,3 @@ class Device:
             await asyncio.sleep(0.8)
             self.setAllLedStatus([False, True])
             await asyncio.sleep(0.8)
-
-    async def onLedStateChange(self, callback):
-        if self.isChanged:
-            self.isChanged = False
-            await callback(self.ledStateList)
-        else:
-            await asyncio.sleep(0)
