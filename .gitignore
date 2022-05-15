@@ -5,3 +5,10 @@
 
 .vscode/
 *.o
+*.cmd
+*.a
+*.ko
+*.mod
+*.mod.*
+*.symvers
+*.order
