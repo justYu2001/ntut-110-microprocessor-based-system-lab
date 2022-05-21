@@ -7,7 +7,7 @@
 #define MAJOR_NUM 60
 #define MODULE_NAME "demo"
 
-static int iCount = 0;
+int iCount = 0;
 static char userChar[100];
 
 static ssize_t drv_read(struct file *filp, char *bur, size_t count, loff_t *ppos)
