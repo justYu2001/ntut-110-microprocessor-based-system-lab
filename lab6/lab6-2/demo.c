@@ -42,8 +42,8 @@ static ssize_t driver_write(struct file *filp, const char *buf, size_t size, lof
         userChar[size - 1] = '\0';
         printk("userChar:%s\n", userChar);
 
-        int ledIndex = userChar[size - 2] - '1';
-        int pin = ledPin[ledIndex];
+        int ledIndex = userChar[4] - '1';
+        int pin = gpioPin[ledIndex];
 
         if(userChar[0] == 'g') {
             printk("LED%d Status: %d\n", ledIndex + 1, ledBook[ledIndex]);
@@ -76,7 +76,8 @@ static int demo_init(void) {
 
     char* ledName[4] = { "LED1", "LED2", "LED3", "LED4" };
     
-    for (int i = 0; i < 4; i++) {
+    int i;
+    for (i = 0; i < 4; i++) {
         if (gpio_is_valid(gpioPin[i]) == 0) {
             printk("pin %d is no valid\n", gpioPin[i]);
             return -EBUSY;
@@ -87,7 +88,7 @@ static int demo_init(void) {
             return -EBUSY;
         }
 
-        gpio_direction_output(gpioPinp[i], 0);
+        gpio_direction_output(gpioPin[i], 0);
         gpio_export(gpioPin[i], false);
     }
     
@@ -103,7 +104,8 @@ static int demo_init(void) {
 static void demo_exit(void) {
     printk("<1>demo: removed\n");
 
-    for (int i = 0; i < 4; i++) {
+    int i;
+    for (i = 0; i < 4; i++) {
         gpio_free(gpioPin[i]);
     }
 
