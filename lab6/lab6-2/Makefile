@@ -5,7 +5,7 @@ KERNELDIR=/lib/modules/$(shell uname -r)/build
 endif
 
 all:
-	gcc -o test.o test.c
+	g++ -o lab6-2 lab6-2.cpp
 	make -C $(KERNELDIR) SUBDIRS=$(PWD) modules
 
 clean:
