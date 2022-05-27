@@ -69,7 +69,7 @@ static struct file_operations driver_fops = {
     .write = driver_write,
 };
 
-static int driver_init(void) {
+static int demo_init(void) {
     int result;
     printk("<1>demo: started\n");
 
@@ -83,12 +83,12 @@ static int driver_init(void) {
     return 0;
 }
 
-static void driver_exit(void) {
+static void demo_exit(void) {
     printk("<1>demo: removed\n");
 
     /* Unregister character device */
     unregister_chrdev(DRIVER_MAJOR, DRIVER_NAME);
 }
 
-module_init(driver_init);
-module_exit(driver_exit);
+module_init(demo_init);
+module_exit(demo_exit);
