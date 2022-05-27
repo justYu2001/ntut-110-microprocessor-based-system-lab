@@ -9,10 +9,10 @@ int main(int argc, char *argv[]) {
 
     if (fp != NULL) {
         if (argc == 3) {
-            snprintf(buffer, sizeof(buffer), "%s %c", argv[2], argv[1][3]);
+            snprintf(buffer, sizeof(buffer), "%s %d", argv[2], argv[1][3] - '0');
             fwrite(buffer, sizeof(buffer), 1, fp);
         } else if (argc == 2) {
-            snprintf(buffer, sizeof(buffer), "get %c", argv[1][3]);
+            snprintf(buffer, sizeof(buffer), "get %d", argv[1][3] - '0');
         } else {
             cout << "Error: number of arg\n";
             cout << "number of arg: " << argc << endl;
