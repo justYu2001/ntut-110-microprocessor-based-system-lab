@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <semaphore.h>
 #include "gpio.h"
 
-sem_t semaphore;
+pthread_mutex_t mutex;
 
 int gpioPin[4] = { 396, 392, 481, 388 };
 char statusList[5];
@@ -27,7 +26,7 @@ void* ledOneHandler() {
         sem_post(&semaphore);
         sleep(1);
     }
-
+    
     pthread_exit(NULL);
 }
 
@@ -76,7 +75,7 @@ void* ledFourHandler() {
     pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 3) {
         printf("argc number error\n");
         return 0;
@@ -92,10 +91,10 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < 4; i++) {
         exportGpio(gpioPin[i]);
         setDirection(gpioPin[i], 1);
-        setValue(gpioPin[i], 0);
     }
 
-    sem_init(&semaphore, 0, 1);
+    pthread_t thread1, thread2;
+    pthread_mutex_init(&mutex, 0);
 
     pthread_t pthreadList[4];
     pthread_create(&pthreadList[0], NULL, ledOneHandler, NULL);
@@ -107,13 +106,14 @@ int main(int argc, char *argv[]) {
     pthread_create(&pthreadList[3], NULL, ledFourHandler, NULL);
 
     for (int i = 0; i < 4; i++) {
+        pthread_join(pthreadList[i], NULL);
+    }
+
+    for (int i = 0; i < 4; i++) {
         setValue(gpioPin[i], 0);
         unexportGpio(gpioPin[i]);
     }
 
-    for (int i = 0; i < 4; i++) {
-        pthread_join(pthreadList[i], NULL);
-    }
-
+    pthread_mutex_destroy(&mutex);
     return 0;
 }
