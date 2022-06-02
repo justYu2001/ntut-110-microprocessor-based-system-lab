@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
-#include <linux/gpio.h>
-#include <asm/uaccess.h>
+#include <unistd.h>
+#include "gpio.h"
 
 pthread_mutex_t mutex;
 
@@ -20,7 +20,7 @@ void* ledOneHandler() {
         } else {
             printf("Status: %s\n", negativeList);
         }
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
@@ -35,7 +35,7 @@ void* ledTwoHandler() {
     int value = statusList[1] - '0';
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
@@ -50,7 +50,7 @@ void* ledThreeHandler() {
     int value = statusList[2] - '0';
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
@@ -65,7 +65,7 @@ void* ledFourHandler() {
     int value = statusList[3] - '0';
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
@@ -81,29 +81,16 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    statusList = argv[0];
-
     for (int i = 0; i < 4; i++) {
+        statusList[i] = argv[1][i];
         negativeList[i] = statusList[i] == '0' ? '1' : '0';
     }
 
     times = argv[1][0] - '0';
-    
-    char* ledName[4] = { "LED1", "LED2", "LED3", "LED4" };
 
     for (int i = 0; i < 4; i++) {
-        if (gpio_is_valid(gpioPin[i]) == 0) {
-            printk("pin %d is no valid\n", gpioPin[i]);
-            return -EBUSY;
-        }
-
-        if (gpio_request(gpioPin[i], ledName[i]) < 0) {
-            printk("pin %d is busy\n", gpioPin[i]);
-            return -EBUSY;
-        }
-
-        gpio_direction_output(gpioPin[i], 0);
-        gpio_export(gpioPin[i], false);
+        exportGpio(gpioPin[i]);
+        setDirection(gpioPin[i], 1);
     }
 
     pthread_t thread1, thread2;
@@ -120,7 +107,8 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < 4; i++) {
-        gpio_set_value(gpioPin[i], 0);
+        setValue(gpioPin[i], 0);
+        unexportGpio(gpioPin[i]);
     }
 
     pthread_mutex_destroy(&mutex);

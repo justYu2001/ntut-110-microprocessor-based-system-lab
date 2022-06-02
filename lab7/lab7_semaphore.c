@@ -2,8 +2,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
-#include <linux/gpio.h>
-#include <asm/uaccess.h>
+#include "gpio.h"
 
 sem_t semaphore;
 
@@ -17,7 +16,7 @@ void* ledOneHandler() {
     int value = statusList[0] - '0';
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
     }
@@ -30,7 +29,7 @@ void* ledTwoHandler() {
     int value = statusList[1] - '0';
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
     }
@@ -43,7 +42,7 @@ void* ledThreeHandler() {
     int value = statusList[2] - '0';
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
     }
@@ -56,7 +55,7 @@ void* ledFourHandler() {
     int value = statusList[3] - '0';
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
-        gpio_set_value(gpio, value);
+        setValue(gpio, value);
         printf("GPIO: %d status: %d", gpio, value);
         value = (value + 1) % 2;
     }
@@ -70,29 +69,17 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    statusList = argv[0];
-
     for (int i = 0; i < 4; i++) {
+        statusList[i] = argv[1][i];
         negativeList[i] = statusList[i] == '0' ? '1' : '0';
     }
 
     times = argv[1][0] - '0';
-    
-    char* ledName[4] = { "LED1", "LED2", "LED3", "LED4" };
 
     for (int i = 0; i < 4; i++) {
-        if (gpio_is_valid(gpioPin[i]) == 0) {
-            printk("pin %d is no valid\n", gpioPin[i]);
-            return -EBUSY;
-        }
-
-        if (gpio_request(gpioPin[i], ledName[i]) < 0) {
-            printk("pin %d is busy\n", gpioPin[i]);
-            return -EBUSY;
-        }
-
-        gpio_direction_output(gpioPin[i], 0);
-        gpio_export(gpioPin[i], false);
+        exportGpio(gpioPin[i]);
+        setDirection(gpioPin[i], 1);
+        setValue(gpioPin[i], 0);
     }
 
     sem_init(&semaphore, 0, 0);
@@ -115,7 +102,8 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < 4; i++) {
-        gpio_set_value(gpioPin[i], 0);
+        setValue(gpioPin[i], 0);
+        unexportGpio(gpioPin[i]);
     }
 
     for (int i = 0; i < 4; i++) {
