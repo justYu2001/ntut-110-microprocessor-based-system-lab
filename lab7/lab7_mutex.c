@@ -21,7 +21,7 @@ void* ledOneHandler() {
             printf("Status: %s\n", negativeList);
         }
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
         sleep(1);
@@ -36,7 +36,7 @@ void* ledTwoHandler() {
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
         sleep(1);
@@ -51,7 +51,7 @@ void* ledThreeHandler() {
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
         sleep(1);
@@ -66,7 +66,7 @@ void* ledFourHandler() {
     for (int i = 0; i < times * 2; i++) {
         pthread_mutex_lock(&mutex);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
         pthread_mutex_unlock(&mutex);
         sleep(1);
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
         negativeList[i] = statusList[i] == '0' ? '1' : '0';
     }
 
-    times = argv[1][0] - '0';
+    times = argv[2][0] - '0';
 
     for (int i = 0; i < 4; i++) {
         exportGpio(gpioPin[i]);
@@ -98,8 +98,11 @@ int main(int argc, char* argv[]) {
 
     pthread_t pthreadList[4];
     pthread_create(&pthreadList[0], NULL, ledOneHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[1], NULL, ledTwoHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[2], NULL, ledThreeHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[3], NULL, ledFourHandler, NULL);
 
     for (int i = 0; i < 4; i++) {

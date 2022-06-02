@@ -16,9 +16,15 @@ void* ledOneHandler() {
     int value = statusList[0] - '0';
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
+        if (i % 2 == 0) {
+            printf("Status: %s\n", statusList);
+        } else {
+            printf("Status: %s\n", negativeList);
+        }
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
+        sem_post(&semaphore);
     }
 
     pthread_exit(NULL);
@@ -30,8 +36,9 @@ void* ledTwoHandler() {
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
+        sem_post(&semaphore);
     }
 
     pthread_exit(NULL);
@@ -43,8 +50,9 @@ void* ledThreeHandler() {
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
+        sem_post(&semaphore);
     }
 
     pthread_exit(NULL);
@@ -56,8 +64,9 @@ void* ledFourHandler() {
     for (int i = 0; i < times * 2; i++) {
         sem_wait(&semaphore);
         setValue(gpio, value);
-        printf("GPIO: %d status: %d", gpio, value);
+        printf("GPIO: %d status: %d\n", gpio, value);
         value = (value + 1) % 2;
+        sem_post(&semaphore);
     }
 
     pthread_exit(NULL);
@@ -74,7 +83,7 @@ int main(int argc, char *argv[]) {
         negativeList[i] = statusList[i] == '0' ? '1' : '0';
     }
 
-    times = argv[1][0] - '0';
+    times = argv[2][0] - '0';
 
     for (int i = 0; i < 4; i++) {
         exportGpio(gpioPin[i]);
@@ -82,24 +91,16 @@ int main(int argc, char *argv[]) {
         setValue(gpioPin[i], 0);
     }
 
-    sem_init(&semaphore, 0, 0);
+    sem_init(&semaphore, 0, 1);
 
     pthread_t pthreadList[4];
     pthread_create(&pthreadList[0], NULL, ledOneHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[1], NULL, ledTwoHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[2], NULL, ledThreeHandler, NULL);
+    usleep(100);
     pthread_create(&pthreadList[3], NULL, ledFourHandler, NULL);
-
-    for (int i = 0; i < times * 2; i++) {
-        if (i % 2 == 0) {
-            printf("Status: %s\n", statusList);
-        } else {
-            printf("Status: %s\n", negativeList);
-        }
-
-        sem_post(&semaphore);
-        sleep(1);
-    }
 
     for (int i = 0; i < 4; i++) {
         setValue(gpioPin[i], 0);
