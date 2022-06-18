@@ -3,6 +3,8 @@
 !*/
 !*/makefile
 
+__pycache__/
+
 .vscode/
 *.o
 *.cmd
