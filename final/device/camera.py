@@ -35,7 +35,7 @@ class Camera:
             if ADC_Sensor.get_value() > 900:
                 frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-            _, jpeg = cv.imencode('.jpg', self.current_frame)
+            _, jpeg = cv.imencode('.jpg', frame)
 
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
