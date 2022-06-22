@@ -12,7 +12,7 @@ async def getTime(websocket: WebSocket):
     while True:
         await asyncio.sleep(1)
         value = get_adc_value()
-        newTimeString = "daytime" if value > 1900 else "night"
+        newTimeString = "night" if value > 600 else "daytime"
         if timeString != newTimeString:
             timeString = newTimeString
             await websocket.send_text(timeString)
