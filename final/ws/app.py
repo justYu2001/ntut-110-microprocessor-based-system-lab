@@ -15,7 +15,7 @@ async def getTime(websocket: WebSocket):
     while True:
         await asyncio.sleep(1)
         ADC_value = ADC_Sensor.get_value()
-        newTimeString = "night" if ADC_value > 600 else "daytime"
+        newTimeString = "night" if ADC_value > 800 else "daytime"
 
         if newTimeString == "night" and settings.mode == "production":
             subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller on", shell = True)
@@ -26,8 +26,6 @@ async def getTime(websocket: WebSocket):
         if timeString != newTimeString:
             timeString = newTimeString
             await websocket.send_text(timeString)
-    
-    subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller off", shell = True)
 
 @websocket_app.websocket("/has_person")
 async def getTime(websocket: WebSocket):
@@ -45,5 +43,3 @@ async def getTime(websocket: WebSocket):
                 subprocess.run("./led_controller/driver/controller LED1 off", shell = True)
 
             await websocket.send_text("no person")
-    
-    subprocess.run("./led_controller/driver/controller LED1 off", shell = True)
