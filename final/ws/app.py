@@ -17,10 +17,10 @@ async def getTime(websocket: WebSocket):
         newTimeString = "night" if ADC_value > 600 else "daytime"
 
         if newTimeString == "night" and settings.mode == "production":
-            subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller LED1 on", shell = True)
+            subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller on", shell = True)
         
         elif newTimeString == "daytime" and settings.mode == "production":
-            subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller LED1 off", shell = True)
+            subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller off", shell = True)
 
         if timeString != newTimeString:
             timeString = newTimeString
