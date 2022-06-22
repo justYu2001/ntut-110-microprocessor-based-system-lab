@@ -26,6 +26,8 @@ async def getTime(websocket: WebSocket):
         if timeString != newTimeString:
             timeString = newTimeString
             await websocket.send_text(timeString)
+    
+    subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller off", shell = True)
 
 @websocket_app.websocket("/has_person")
 async def getTime(websocket: WebSocket):
@@ -41,5 +43,7 @@ async def getTime(websocket: WebSocket):
         else:
             if settings.mode == "production":
                 subprocess.run("./led_controller/driver/controller LED1 off", shell = True)
-                
+
             await websocket.send_text("no person")
+    
+    subprocess.run("./led_controller/driver/controller LED1 off", shell = True)
