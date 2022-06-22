@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
 
     pthread_t pthread;
     pthread_create(&pthread, NULL, ledHandler, NULL);
+    sem_post(&semaphore);
     pthread_join(pthread, NULL);
 
     return 0;
