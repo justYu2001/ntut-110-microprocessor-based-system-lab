@@ -37,9 +37,9 @@ int main(int argc, char *argv[]) {
 
     sem_init(&semaphore, 0, 0);
 
-    pthread_t pthreadList[4];
-    pthread_create(&pthreadList[0], NULL, ledHandler, NULL);
-    pthread_join(pthreadList[i], NULL);
+    pthread_t pthread;
+    pthread_create(&pthread, NULL, ledHandler, NULL);
+    pthread_join(pthread, NULL);
 
     return 0;
 }
