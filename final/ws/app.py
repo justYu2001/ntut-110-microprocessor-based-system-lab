@@ -3,7 +3,7 @@ from fastapi import FastAPI, WebSocket
 import asyncio
 import subprocess
 from config import settings
-from device.adc import get_adc_value
+from device import ADC_Sensor
 
 websocket_app = FastAPI()
 
@@ -13,8 +13,8 @@ async def getTime(websocket: WebSocket):
     timeString = "daytime"
     while True:
         await asyncio.sleep(1)
-        value = get_adc_value()
-        newTimeString = "night" if value > 600 else "daytime"
+        ADC_value = ADC_Sensor.get_value()
+        newTimeString = "night" if ADC_value > 600 else "daytime"
 
         if newTimeString == "night" and settings.mode == "production":
             subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller on", shell = True)
