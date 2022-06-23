@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { ReactComponent as WarningIcon } from "../icons/warning.svg";
-import { ReactComponent as SafeIcon } from '../icons/safe.svg';
+import { ReactComponent as WarningIcon } from "../assets/icons/warning.svg";
+import { ReactComponent as SafeIcon } from '../assets/icons/safe.svg';
+import ModeIcon from "./ModeIcon.jsx"
 
 import axios from 'axios';
 
@@ -60,7 +61,7 @@ const Dashboard = () => {
         const { mode, isActive } = props;
 
         return (
-            <button className={ `${isActive ? "text-sky-400" : "text-neutral-400" } font-bold pl-2 pr-3 py-1 rounded-full hover:bg-slate-200 hover:text-sky-400` }
+            <button className={ `${isActive ? "text-sky-400" : "text-neutral-400" } font-bold px-4 py-1 rounded-full hover:bg-slate-200 hover:text-sky-400` }
              onClick={handleModeButtonClick}
             >
                 {mode}
@@ -75,10 +76,10 @@ const Dashboard = () => {
     return (
         <div className="h-40 mt-6 py-3 bg-white rounded flex justify-center">
             <div className="w-4/5 flex items-center">
-                <WarningIcon className="h-16 w-16 text-red-500"></WarningIcon>
+                <ModeIcon></ModeIcon>
                 <div className="mx-6 flex-1">
                     <h3 className="mb-4 pb-5 px-2 border-b-4 font-bold text-4xl">監視器模式</h3>
-                    <div className="tracking-wider">
+                    <div className="tracking-wider -ml-2">
                         {cameraModeList.map((mode) => {
                             return <ModeButton mode={mode} isActive={currentMode === mode} key={mode}></ModeButton>
                         })}
