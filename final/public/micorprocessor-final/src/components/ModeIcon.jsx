@@ -30,7 +30,7 @@ const ModeIcon = () => {
     }, [websocket]);
 
     return (
-        <img src={mode === "night" ? nightIcon : daytimeIcon} alt="mode icon" className="w-20 h-20" />
+        <img src={mode === "night" ? nightIcon : daytimeIcon} alt="mode icon" className="w-16 h-16" />
     );
 };
 

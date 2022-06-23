@@ -74,10 +74,10 @@ const Dashboard = () => {
     const cameraModeList = [ "白天模式", "夜晚模式", "自動模式" ];
 
     return (
-        <div className="h-40 mt-6 py-3 bg-white rounded flex justify-center">
+        <div className="h-40 mt-6 py-3 pl-6 bg-white rounded flex justify-center">
             <div className="w-4/5 flex items-center">
                 <ModeIcon></ModeIcon>
-                <div className="mx-6 flex-1">
+                <div className="ml-6 mr-2 flex-1">
                     <h3 className="mb-4 pb-5 px-2 border-b-4 font-bold text-4xl">監視器模式</h3>
                     <div className="tracking-wider -ml-2">
                         {cameraModeList.map((mode) => {
@@ -86,7 +86,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className="mx-3 pl-10 border-l-4 flex flex-col justify-center items-center">
+            <div className="mx-3 border-l-4 flex flex-col justify-center items-center">
                 {hasPerson
                     ? <WarningIcon className="h-16 w-16 text-red-500"></WarningIcon>
                     : <SafeIcon className="h-16 w-16 text-green-400"></SafeIcon> 
