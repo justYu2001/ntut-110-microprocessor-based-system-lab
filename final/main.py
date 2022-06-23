@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 
 from config import settings
@@ -7,6 +8,19 @@ from api import api_router
 from ws import websocket_app
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/websocket", websocket_app)
 app.include_router(api_router, prefix = '/api')

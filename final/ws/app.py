@@ -11,22 +11,25 @@ websocket_app = FastAPI()
 @websocket_app.websocket("/time")
 async def getTime(websocket: WebSocket):
     await websocket.accept()
-    timeString = "daytime"
+    time_string = "daytime"
     
     while True:
         await asyncio.sleep(1)
         ADC_value = ADC_Sensor.get_value()
-        newTimeString = "night" if ADC_value > 800 else "daytime"
+        if camera.get_mode() == "auto":
+            new_time_string = "night" if ADC_value > 800 else "daytime"
+        else:
+            new_time_string = camera.get_mode()
 
-        if newTimeString == "night" and settings.mode == "production":
+        if new_time_string == "night" and settings.mode == "production":
             subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller on", shell = True)
         
-        elif newTimeString == "daytime" and settings.mode == "production":
+        elif new_time_string == "daytime" and settings.mode == "production":
             subprocess.run("echo nvidia | sudo -S ./led_controller/multithread/controller off", shell = True)
 
-        if timeString != newTimeString:
-            timeString = newTimeString
-            await websocket.send_text(timeString)
+        if time_string != new_time_string:
+            time_string = new_time_string
+            await websocket.send_text(time_string)
         
 @websocket_app.websocket("/has_person")
 async def getTime(websocket: WebSocket):

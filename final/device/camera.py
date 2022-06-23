@@ -4,6 +4,7 @@ from config import settings
 
 class Camera:
     def __init__(self):
+        self.mode = "auto"
         self.hog = cv.HOGDescriptor()
         self.hog.setSVMDetector(cv.HOGDescriptor_getDefaultPeopleDetector())
 
@@ -23,6 +24,12 @@ class Camera:
         self.current_frame = None
         self.ret = False
 
+    def get_mode(self):
+        return self.mode
+
+    def set_mode(self, mode):
+        self.mode = mode
+
     def generate_frames(self):
         while True:
             self.ret, self.current_frame = self.capture.read()
@@ -32,7 +39,7 @@ class Camera:
 
             frame = self.current_frame
 
-            if ADC_Sensor.get_value() > 800:
+            if self.mode == "night" or (ADC_Sensor.get_value() > 800 and self.mode == "auto"):
                 frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
             _, jpeg = cv.imencode('.jpg', frame)

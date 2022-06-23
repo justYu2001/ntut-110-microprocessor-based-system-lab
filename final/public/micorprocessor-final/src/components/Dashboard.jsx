@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ReactComponent as WarningIcon } from "../icons/warning.svg";
 import { ReactComponent as SafeIcon } from '../icons/safe.svg';
 
+import axios from 'axios';
+
 const Dashboard = () => {
     const [websocket, setWebsocket] = useState(null);
 
@@ -32,8 +34,26 @@ const Dashboard = () => {
     const [currentMode, setCurrentMode] = useState("自動模式");
 
     const handleModeButtonClick = (event) => {
-        const mode = event.currentTarget.innerText;
+        let mode = event.currentTarget.innerText;
         setCurrentMode(mode);
+
+        if (mode === "白天模式") {
+            mode = "daytime";
+        } else if (mode === "夜晚模式") {
+            mode =  "night";
+        } else if (mode === "自動模式") {
+            mode = "auto";
+        }
+        
+        let API_URL = "";
+
+        if (process.env.NODE_ENV === "development") {
+            API_URL = "http://localhost:8000/api/set_camera_mode";
+        } else {
+            API_URL = "/api/set_camera_mode";
+        }
+
+        axios.patch(API_URL, { mode });
     }
 
     const ModeButton = (props) => {
@@ -60,7 +80,7 @@ const Dashboard = () => {
                     <h3 className="mb-4 pb-5 px-2 border-b-4 font-bold text-4xl">監視器模式</h3>
                     <div className="tracking-wider">
                         {cameraModeList.map((mode) => {
-                            return <ModeButton mode={mode} isActive={currentMode === mode}></ModeButton>
+                            return <ModeButton mode={mode} isActive={currentMode === mode} key={mode}></ModeButton>
                         })}
                     </div>
                 </div>
